@@ -36,24 +36,26 @@ function App() {
   }, [sections])
 
   const onCardSubmit = (sectionId: number, title: string) => {
-    axios({
-      method: 'post',
-      url: 'http://localhost:3001/cards',
-      data: { sectionId, title }
-    }).then((response) => {
-      let sectionsClone: SectionI[] = [...sections]
-      for (let i = 0; i < sectionsClone.length; i++) {
-        let section: SectionI = sectionsClone[i]
-        if (section.id == sectionId) {
-          section.cards.push({
-            id: response.data.id,
-            title: response.data.title,
-            section_id: sectionId
-          })
-          setSections(sectionsClone)
+    axios
+      .post('http://localhost:3001/cards', {
+        sectionId,
+        title
+      })
+      .then((response) => {
+        let sectionsClone: SectionI[] = [...sections]
+        for (let i = 0; i < sectionsClone.length; i++) {
+          let section: SectionI = sectionsClone[i]
+          if (section.id === sectionId) {
+            section.cards.push({
+              id: response.data.id,
+              title: response.data.title,
+              section_id: sectionId
+            })
+
+            setSections(sectionsClone)
+          }
         }
-      }
-    })
+      })
   }
 
   return (

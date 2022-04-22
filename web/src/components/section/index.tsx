@@ -32,7 +32,7 @@ const Section = ({
 
   return (
     <Wrapper>
-      <WrappedSection>
+      <WrappedSection data-testid={`${title}-section`}>
         <SectionHeader>
           <SectionTitle>{title}</SectionTitle>
         </SectionHeader>
