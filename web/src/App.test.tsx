@@ -1,13 +1,13 @@
 import React from 'react'
 import axios from 'axios'
-import { render, cleanup, screen } from '@testing-library/react'
+import { render, cleanup, screen, within, fireEvent, act } from '@testing-library/react'
 
 import App from './App'
 
 jest.mock('axios')
 
 describe('<App />', () => {
-  var mockedJest: jest.Mocked<typeof axios>
+  let mockedJest: jest.Mocked<typeof axios>
 
   beforeEach(() => {
     mockedJest = axios as jest.Mocked<typeof axios>
@@ -59,5 +59,38 @@ describe('<App />', () => {
     const cardText = await screen.findByText('Test 1')
 
     expect(cardText.nodeName).toBe('DIV')
+  })
+
+  it('renders a "Add another card" span', async () => {
+    const testCardTitle = 'Test Card'
+    const addAnotherCardText = 'Add another card'
+    const addCardText = 'Add card'
+
+    mockedJest.post.mockResolvedValue({
+      data: {
+        id: 15,
+        title: testCardTitle
+      }
+    })
+
+    render(<App />)
+
+    const backlogSection = await screen.findByTestId('Backlog-section')
+    const addAnotherCardSpan = await within(backlogSection).findByText(addAnotherCardText)
+
+    await act(async () => {
+      fireEvent.click(addAnotherCardSpan)
+
+      const cardTitleTextArea = await screen.findByRole('textbox')
+      const addCardInput = await within(backlogSection).findByText(addCardText)
+
+      fireEvent.change(cardTitleTextArea, { target: { value: testCardTitle } })
+
+      fireEvent.click(addCardInput)
+    })
+
+    const newCardText = await within(backlogSection).findByText(testCardTitle)
+
+    expect(newCardText.nodeName).toBe('DIV')
   })
 })
