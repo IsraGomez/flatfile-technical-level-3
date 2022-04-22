@@ -26,11 +26,14 @@ function App() {
 
   useEffect(() => {
     axios.get('http://localhost:3001/sections').then((response) => {
-      // Section order is determined by ID so sort by ID
-      const sortedSections = response.data.sort((a: SectionI, b: SectionI) => a.id - b.id)
-      setSections(sortedSections)
+      setSections(response.data)
     })
-  })
+  }, [])
+
+  useEffect(() => {
+    const sortedSections = sections.sort((a: SectionI, b: SectionI) => a.id - b.id)
+    setSections(sortedSections)
+  }, [sections])
 
   const onCardSubmit = (sectionId: number, title: string) => {
     axios({
@@ -56,7 +59,7 @@ function App() {
   return (
     <BoardContainer>
       {sections.map((section: SectionI) => {
-        return <Section section={section} onCardSubmit={onCardSubmit}></Section>
+        return <Section section={section} onCardSubmit={onCardSubmit} key={section.id}></Section>
       })}
     </BoardContainer>
   )
